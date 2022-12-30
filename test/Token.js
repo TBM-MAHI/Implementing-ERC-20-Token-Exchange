@@ -91,9 +91,9 @@ describe("Token", () => {
         let amount,transaction,result;
         beforeEach( async () => {
             amount = convertToWei(1000);
-            /* The deployed account is signing/approving the transaction that the ex.ADDRESS is goimg
+            /* The deployer account is signing/approving the transaction-- that the exchangeAccount is going
             to spent how many tokens from the deployers address
-            appriving on behalf of the deployer*/
+            approving on behalf of the deployer*/
             transaction = await token.connect(deployerAccount).approve(exchageAccount.address, amount);
             result = await transaction.wait();
         })

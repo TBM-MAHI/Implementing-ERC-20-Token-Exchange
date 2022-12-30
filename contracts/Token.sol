@@ -56,8 +56,10 @@ contract Token{
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool sucess){
     //check approval, check to make sure that amount being sent is less than
     //what has been approved 
+    /*console.log("from token.sol", _from, _to, _value);
+    console.log("bal",balanceOf[_from]);*/
     require(_value <= allowance[_from][msg.sender],"Sending more than Approved!");
-    require(balanceOf[_from] >= _value);
+    require(balanceOf[_from] >= _value," Not Enough Balance! ");
     /*  UPDATE the Allowance
         Deduct how much token msg.sender has SPENT from Aloowance */
    allowance[_from][msg.sender] = allowance[_from][msg.sender]-_value;
