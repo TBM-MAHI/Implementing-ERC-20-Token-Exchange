@@ -241,12 +241,11 @@ describe("EXchange", () => {
             })
         })
         describe("Filling Actions", async () => {
-             //user2 fills the order
-             beforeEach(async () => {
-                transaction = await exchange.connect(user2).fillOrder(1);
-                result = await transaction.wait();
-            });
-            describe('success', async ()=>{
+            describe('success', async () => {
+                beforeEach(async () => {
+                    transaction = await exchange.connect(user2).fillOrder(1);
+                    result = await transaction.wait();
+                });
                 it('execute the trading and charge fees', async () => {
                     //GET Tokens
                     expect( await exchange.balanceOf(token2.address, user2.address)).to.equal(convertToWei(28));
@@ -275,7 +274,23 @@ describe("EXchange", () => {
                 })
             })
             describe('failure', async () => {
-                it()
+                it("rejects invalid order id", async () => {
+                    let invalid_id = 999;
+                    await expect((exchange.connect(user1).fillOrder(invalid_id))).to.be.reverted;
+                })
+                it('rejects already filled orders', async () => {
+                    transaction = await exchange.connect(user2).fillOrder(1)
+                    result = await transaction.wait();
+                    //Cant fill same order twice
+                    await expect(exchange.connect(user2).fillOrder(1)).to.be.reverted
+                  })
+          
+                  it('rejects canceled orders', async () => {
+                    transaction = await exchange.connect(user1).cancelOrder(1)
+                      result = await transaction.wait();
+          
+                    await expect(exchange.connect(user2).fillOrder(1)).to.be.reverted
+                  })
             })
         })
     })
