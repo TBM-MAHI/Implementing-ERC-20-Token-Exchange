@@ -295,3 +295,4 @@ describe("EXchange", () => {
         })
     })
 })
+module.exports = convertToWei;

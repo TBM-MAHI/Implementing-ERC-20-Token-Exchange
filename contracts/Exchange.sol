@@ -109,7 +109,7 @@ contract Exchange{
         //Make an Order
         ordersCount += 1;
         orders[ordersCount] = _Order(
-                                1, //id
+                                ordersCount, //id
                                 msg.sender, //user
                                 _tokenGet,
                                 _amountGet,
@@ -118,7 +118,7 @@ contract Exchange{
                                 block.timestamp //Time Of a Block Creation 
                             );
         //emit Order event
-        emit Order( 1, msg.sender, _tokenGet,_amountGet, _tokengive,_amountGive,block.timestamp );
+        emit Order( ordersCount, msg.sender, _tokenGet,_amountGet, _tokengive,_amountGive,block.timestamp );
     }
 
     function cancelOrder(uint256 _id) public{
