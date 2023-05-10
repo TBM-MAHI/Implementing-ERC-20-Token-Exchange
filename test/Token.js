@@ -11,9 +11,8 @@ describe("Token", () => {
         const Token = await ethers.getContractFactory("Token");
         //passing arguments in the constructor function
         token = await Token.deploy("Mahi Token", "MAHI", 1000000);
-        [deployerAccount,receiverAccount,exchageAccount] = await ethers.getSigners();
-        
-    })
+        [deployerAccount,receiverAccount, exchageAccount] = await ethers.getSigners();
+       })
     describe("Deployment", () => {
         const name = 'Mahi Token';
         const symbol = 'MAHI';
@@ -26,11 +25,12 @@ describe("Token", () => {
             //check the name correct or not
             expect(tokenname).to.equal(name);
         })
+       
         it("has correct symbol", async () => expect(await token.symbol()).to.equal(symbol));
         it("has correct decimal", async () => expect(await token.decimals()).to.equal(decimals));
         it("has correct totalSupply", async () => expect(await token.totalSupply()).to.equal(totalSupply));
-        it('Assigns total supply to deployers address', async () => {
-            console.log(deployerAccount.address);
+        it('Assigns total supply to deployer address', async () => {
+           // console.log(`deployer address $ {deployerAccount.address}`);
             expect(await token.balanceOf(deployerAccount.address)).to.equal(totalSupply);
           });
     })
@@ -39,16 +39,16 @@ describe("Token", () => {
         let amount, transaction, result;
         describe("Success", () => {
             beforeEach(async() => {
-                /* console.log("deployer balanece Before transfer", ethers.utils.formatUnits(
+                console.log("deployer balanece Before transfer", ethers.utils.formatUnits(
                     (await token.balanceOf(deployerAccount.address)).toString() ,'ether'
                   )," Ether");
                   console.log("receiver balanece Before transfer", ethers.utils.formatUnits(
                       ( await token.balanceOf(receiverAccount.address)).toString(),'ether'
-                  )," ether"); */
+                  )," ether");
                   //transfer tokens
                 amount = convertToWei(100);
                  /* to sign the transfer, alter something in the BC
-                  the address needs tobe connected */
+                  the address needs to be connected */
                 transaction = await token.connect(deployerAccount).transfer(receiverAccount.address, amount);
                 result =  await transaction.wait(); //waits for the transaction tobe completed and the result to include on BC
             })
@@ -56,12 +56,12 @@ describe("Token", () => {
                 //ensure that tokens were transferred
                 expect(await token.balanceOf(deployerAccount.address)).to.equal(convertToWei(999900));
                 expect(await token.balanceOf(receiverAccount.address)).to.equal(amount);
-                /* console.log("deployer balanece after transfer", ethers.utils.formatUnits(
+                console.log("deployer balance after transfer", ethers.utils.formatUnits(
                     ( await token.balanceOf(deployerAccount.address)).toString(),'ether'
                 )," Ether");
-                console.log("receiver balanece after transfer", ethers.utils.formatUnits(
+                console.log("receiver balance after transfer", ethers.utils.formatUnits(
                    ( await token.balanceOf(receiverAccount.address)).toString(),'ether'
-                )," ether"); */
+                )," ether");
             })
             it('emits Transfer Event', async () => {
                 const ev = result.events[0];
@@ -76,14 +76,14 @@ describe("Token", () => {
         describe("Failure", () => {
             let invalidAmount;
             it("reject insufficient balances", async() => {
-                invalidAmount = convertToWei(1000000000);
+                invalidAmount = convertToWei(1000000000); //amount grater than total supply
                 let transaction = token.connect(deployerAccount).transfer(receiverAccount.address, invalidAmount);
-                expect(transaction).to.be.reverted
+                await expect(transaction).to.be.reverted;
             })
             it("revert transfer to invalid address", async() => {
                 invalidAmount = convertToWei(100);
                 let transaction = token.connect(deployerAccount).transfer('0x000000000000000000000000000000000', invalidAmount);
-                expect(transaction).to.be.reverted
+                await expect(transaction).to.be.reverted
              })
         })
     })
@@ -91,15 +91,15 @@ describe("Token", () => {
         let amount,transaction,result;
         beforeEach( async () => {
             amount = convertToWei(1000);
-            /* The deployer account is signing/approving the transaction-- that the exchangeAccount is going
-            to spent how many tokens from the deployers address
-            approving on behalf of the deployer*/
+            /* The deployer account is signing/approving the transaction -- that the exchangeAccount is going
+            to spent how many tokens from the deployer address
+            approving on behalf of the deployer */
             transaction = await token.connect(deployerAccount).approve(exchageAccount.address, amount);
             result = await transaction.wait();
         })
         describe('Success', () => {
             it('allocates an allowance for delegated token spending', async () => {
-                //calling alowance mapping
+                //calling allowance mapping
                 expect(await token.allowance(deployerAccount.address, exchageAccount.address)).to.equal(amount);
             }) 
             it('emits Approval Event', async () => {
@@ -127,7 +127,7 @@ describe("Token", () => {
         })
         describe("Success", () => {
             beforeEach(async () => {
-            /* the exchage Account is facilitating the swap of tokens from deplyers account to receivers acc  */
+            /* the exchage Account is facilitating the swap of tokens from deployer account to receivers acc  */
             transaction = await token.connect(exchageAccount).transferFrom(deployerAccount.address, receiverAccount.address, amount);
             result = await transaction.wait();
             })

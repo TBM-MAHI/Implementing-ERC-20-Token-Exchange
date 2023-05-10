@@ -4,12 +4,19 @@ import "hardhat/console.sol";
 import "./Token.sol";
 
 contract Exchange{
+
     address public feeReceivingAccount;
     uint256 public feePersentage;
-    /* 1st mapping address is the tokens. 1 single tokens map to 2nd
-    address- users address and
-    the amount the value users deposited/withdraw from that token exchange */
+    
+    /* 1st mapping address is the tokens. 1 single tokens map to 2nd mapping
+    (address- users) address and
+    the amount/value users deposited/withdraw from that token exchange 
+    Example -- MAHI token ---> ( user1 - 10token,user2- 5tokens...)
+            -- mDAI token --> ( user1 - 1token ,user2- 50tokens...)
+            ........
+    */
     mapping(address => mapping( address=>uint256 )) public tokensBalance;
+    
     mapping(uint256 => _Order) orders;
     uint256 public ordersCount;
     mapping(uint256 => bool) public cancelledOrders;  //track of cancelled orders
@@ -66,7 +73,7 @@ contract Exchange{
         DEPOSIT AND WITHDRAW TOKENS   */ 
     function depositTokens(address _token, uint256 _amount) public{
         /*address(this) - this Exchange contracts address 
-        Token(_token) - passing the address of token contracts; This makes the functions/public vars of token contacts
+        Token(_token) - passing the address of token contracts; This makes the functions/public variables of Token-Contract
         callable*/
        //Transfer Tokens to exchange
        require( Token(_token).transferFrom(msg.sender, address(this), _amount) );
@@ -102,8 +109,8 @@ contract Exchange{
                         address _tokengive, 
                         uint256 _amountGive) 
                         public{
-        //Token Give --{ the token user wants to Spend} - which token and how much
         // Token Get --{ the token thay want to receive} - which token and how much
+        //Token Give --{ the token user wants to Spend} - which token and how much
         // Prevent orders if tokens aren't on exchange
         require( balanceOf(_tokengive, msg.sender) >= _amountGive," REVERT! Not enough Tokens!" );  
         //Make an Order
@@ -123,8 +130,9 @@ contract Exchange{
 
     function cancelOrder(uint256 _id) public{
         /*  Fetch the order  
-            anorder is the type of struct _Order 
-            the **storag**e keywords denotes that something is pulled out of storage */ 
+            an order is the type of struct _Order 
+            the **storag**e keywords denotes that something is pulled out of storage 
+            here anOrder is beingf pulled from orders mapping*/ 
         _Order storage anOrder = orders[_id];
          //Order must exist
         require(anOrder.id == _id);
@@ -141,7 +149,8 @@ contract Exchange{
             anOrder.amountGet, 
             anOrder.tokengive,
             anOrder.amountGive, 
-            anOrder.timestamp);
+            anOrder.timestamp
+        );
     }
     //---------------------
     //EXECUTING ORDERS

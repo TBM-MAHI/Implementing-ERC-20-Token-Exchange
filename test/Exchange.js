@@ -12,7 +12,7 @@ describe("EXchange", () => {
         const Token = await ethers.getContractFactory("Token");
         token1 = await Token.deploy("Mahi Token", "MAHI", 1000000);
         token2 = await Token.deploy("Mock DAI", "DAI", 1000000);
-        //transfering intial tokens to user1
+        //transferring initial tokens to user1
         [deployerAccount, feeReceivingAccount, user1, user2] = await ethers.getSigners();
         let transaction = await token1.connect(deployerAccount).transfer(user1.address, convertToWei(1000));
         let result = await transaction.wait();
@@ -27,7 +27,7 @@ describe("EXchange", () => {
         it("tracks the fee Receiving Account", async () => {
             expect(await exchange.feeReceivingAccount()).to.equal(feeReceivingAccount.address);
         })
-        it("tracks the fee persentage", async () => {
+        it("tracks the fee percentage", async () => {
             expect(await exchange.feePersentage()).to.equal(feePercent);
         })
     })
