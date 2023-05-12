@@ -63,8 +63,8 @@ export let ExchangeReducers = (state = INITIAL_EXCHANGE_STATE, action) => {
   switch (type) {
     case "EXCHANGE_LOADED":
       return {
-        ...state,
         loaded: true,
+        ...state,
         ...payload,
       };
     default:

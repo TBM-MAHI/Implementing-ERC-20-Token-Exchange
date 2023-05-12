@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import config from "../config.json";
-
 import {
   loadProvider,
   loadNetwork,
@@ -9,6 +8,8 @@ import {
   loadTokens,
   loadExchange
 } from "../redux-store/interactions";
+import Navbar from "./Navbar";
+
 const App = () => {
   const dispatch = useDispatch();
   const loadBlockchainData = async () => {
@@ -17,8 +18,16 @@ const App = () => {
     // Fetch current network's chainId (e.g. hardhat: 31337, kovan: 42)
     const chainId = await loadNetwork(provider, dispatch);
 
-    // Fetch current account & balance from Metamask
-    await loadAccount(provider, dispatch);
+    // Fetch current account & balance from Metamask WHEN ACCOUNT ChangeS
+      window.ethereum.on("accountsChanged", () => {
+        loadAccount(provider, dispatch);
+      });
+    
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload();
+    })
+
+    //await loadAccount(provider, dispatch);
     // Load token smart contracts
     let configs = config[chainId];
     await loadTokens(
@@ -38,7 +47,7 @@ const App = () => {
   });
   return (
     <div>
-      {/* Navbar */}
+       <Navbar/>
 
       <main className="exchange grid">
         <section className="exchange__section--left grid">
