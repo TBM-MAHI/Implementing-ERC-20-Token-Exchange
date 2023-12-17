@@ -22,7 +22,7 @@ contract Token {
         address indexed from, 
         address indexed to, 
         uint256 value
-        );
+    );
     event Approval(
         address indexed owner,
         address indexed spender,

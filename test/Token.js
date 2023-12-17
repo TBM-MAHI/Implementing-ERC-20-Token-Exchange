@@ -17,7 +17,7 @@ describe("Token", () => {
         const name = 'Mahi Token';
         const symbol = 'MAHI';
         const decimals = '18';
-        const totalSupply = convertToWei('1000000'); 
+        const totalSupply = convertToWei('1000000'); //1 Million ether
          //tests cases go here...
         it("has correct name", async () => {
             //read token name

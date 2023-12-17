@@ -27,8 +27,7 @@ const App = () => {
       window.location.reload();
     })
 
-    //await loadAccount(provider, dispatch);
-    // Load token smart contracts
+ // Load token smart contracts
     let configs = config[chainId];
     await loadTokens(
       [configs.MAHI.address, configs.mETH.address],
